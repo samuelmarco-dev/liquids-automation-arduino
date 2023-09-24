@@ -14,7 +14,7 @@
 #define TIMER 500
 
 #define COPO_CHEIO 7
-#define COPO_VAZIO 21
+#define COPO_VAZIO 25
 
 UltraSonicDistanceSensor sensorDistanciaCima(TRIGGER_CIMA, ECHO_CIMA);
 UltraSonicDistanceSensor sensorDistanciaBaixo(TRIGGER_BAIXO, ECHO_BAIXO);
@@ -35,7 +35,7 @@ float distanciaBaixo = 0;
 
 int clickBotao = 0;          
 int arrayTempo[5] = {
-  2470, 4930, 7400, 9870, 12330
+  2300, 4200, 6500, 8400, 12680
 };
 bool selecionado = false;
 
@@ -51,7 +51,7 @@ void setup() {
   lcd.backlight();
 
   serialFreq.set(TIMER);
-  sensorFreq.set(TIMER);
+  sensorFreq.set(TIMER - 250);
   aproximeFreq.set(TIMER);
   opcaoFreq.set(TIMER);
   semSelecaoFreq.set(TIMER);
@@ -111,10 +111,10 @@ void loop() {
   } 
   else { 
     digitalWrite(BOMBA, LOW);
+    if(aproximeFreq.repeat()) exibirAlertaTela(); 
     clickBotao = 0;
     selecionado = false;
     bombaFreq.reset();
-    if(aproximeFreq.repeat()) exibirAlertaTela(); 
   }
 }
 
@@ -132,12 +132,20 @@ void calcularDistancia() {
 }
 
 void exibirAlertaTela() {
+  if(!verificarDistanciaBaixo() && !verificarDistanciaCima()) {
+    lcd.clear();
+    lcd.setCursor(0, 1);
+    lcd.print("Nao identificado");
+    return;
+  }
+
   if(!verificarDistanciaBaixo()) {
     lcd.clear();
     lcd.setCursor(0, 1);
     lcd.print("Aproxime o copo!");
     lcd.setCursor(0, 2);
     lcd.print("Copo esta fora.");
+    return;
   }
   if(!verificarDistanciaCima()) {
     lcd.clear();
@@ -145,11 +153,12 @@ void exibirAlertaTela() {
     lcd.print("Retire o copo!");
     lcd.setCursor(0, 2);
     lcd.print("Copo esta cheio.");
+    return;
   }
 }
 
 int verificarDistanciaBaixo() {
-  return distanciaBaixo >= 3 && distanciaBaixo <= 5.2;
+  return distanciaBaixo >= 3 && distanciaBaixo <= 6.4;
 }
 
 int verificarDistanciaCima() {
