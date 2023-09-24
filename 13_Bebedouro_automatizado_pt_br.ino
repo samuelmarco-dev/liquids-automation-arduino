@@ -7,14 +7,14 @@
 #define ECHO_CIMA 5
 #define TRIGGER_BAIXO 6
 #define ECHO_BAIXO 7
+#define BOMBA 8
 #define BOTAO 11
 #define ENTER 12
-#define BOMBA 13
 
 #define TIMER 500
 
-#define COPO_CHEIO 10
-#define COPO_VAZIO 26
+#define COPO_CHEIO 7
+#define COPO_VAZIO 21
 
 UltraSonicDistanceSensor sensorDistanciaCima(TRIGGER_CIMA, ECHO_CIMA);
 UltraSonicDistanceSensor sensorDistanciaBaixo(TRIGGER_BAIXO, ECHO_BAIXO);
@@ -132,15 +132,24 @@ void calcularDistancia() {
 }
 
 void exibirAlertaTela() {
-  lcd.clear();
-  lcd.setCursor(0, 1);
-  lcd.print("Aproxime o copo!");
-  lcd.setCursor(0, 2);
-  lcd.print("Copo esta longe.");
+  if(!verificarDistanciaBaixo()) {
+    lcd.clear();
+    lcd.setCursor(0, 1);
+    lcd.print("Aproxime o copo!");
+    lcd.setCursor(0, 2);
+    lcd.print("Copo esta fora.");
+  }
+  if(!verificarDistanciaCima()) {
+    lcd.clear();
+    lcd.setCursor(0, 1);
+    lcd.print("Retire o copo!");
+    lcd.setCursor(0, 2);
+    lcd.print("Copo esta cheio.");
+  }
 }
 
 int verificarDistanciaBaixo() {
-  return distanciaBaixo >= 4 && distanciaBaixo <= 7.2;
+  return distanciaBaixo >= 3 && distanciaBaixo <= 5.2;
 }
 
 int verificarDistanciaCima() {
